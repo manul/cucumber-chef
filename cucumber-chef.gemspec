@@ -4,20 +4,18 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{cucumber-chef}
+  s.name = "cucumber-chef"
   s.version = "1.0.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Stephen Nelson-Smith"]
-  s.date = %q{2011-09-26}
-  s.default_executable = %q{cucumber-chef}
-  s.description = %q{Framework for behaviour-drive infrastructure development.}
-  s.email = %q{stephen@atalanta-systems.com}
+  s.date = "2012-01-28"
+  s.description = "Framework for behaviour-drive infrastructure development."
+  s.email = "stephen@atalanta-systems.com"
   s.executables = ["cucumber-chef"]
   s.extra_rdoc_files = [
     "LICENSE",
-    "README.md",
-    "TODO"
+    "README.md"
   ]
   s.files = [
     ".document",
@@ -80,24 +78,20 @@ Gem::Specification.new do |s|
     "spec/spec_helper.rb",
     "website/website.html"
   ]
-  s.homepage = %q{http://cucumber-chef.org}
+  s.homepage = "http://cucumber-chef.org"
   s.licenses = ["Apache v2"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.6.2}
-  s.summary = %q{Tests Chef-built infrastructure}
+  s.rubygems_version = "1.8.13"
+  s.summary = "Tests Chef-built infrastructure"
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-<<<<<<< HEAD
-      s.add_runtime_dependency(%q<chef>, [">= 0.10.0"])
-=======
       s.add_runtime_dependency(%q<rake>, ["~> 0.9.2"])
       s.add_runtime_dependency(%q<chef>, [">= 0.10.2"])
       s.add_runtime_dependency(%q<cucumber>, [">= 0"])
       s.add_runtime_dependency(%q<cucumber-nagios>, [">= 0"])
->>>>>>> upstream/master
       s.add_runtime_dependency(%q<fog>, [">= 0"])
       s.add_runtime_dependency(%q<thor>, [">= 0"])
       s.add_runtime_dependency(%q<net-scp>, [">= 0"])
@@ -107,17 +101,8 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<jeweler>, ["~> 1.6.2"])
       s.add_development_dependency(%q<rcov>, [">= 0"])
     else
-<<<<<<< HEAD
-      s.add_dependency(%q<chef>, [">= 0.10.0"])
-      s.add_dependency(%q<fog>, [">= 0"])
-      s.add_dependency(%q<thor>, [">= 0"])
-      s.add_dependency(%q<bundler>, ["~> 1.0.0"])
-      s.add_dependency(%q<jeweler>, ["~> 1.6.2"])
-      s.add_dependency(%q<rcov>, [">= 0"])
-=======
       s.add_dependency(%q<rake>, ["~> 0.9.2"])
       s.add_dependency(%q<chef>, [">= 0.10.2"])
->>>>>>> upstream/master
       s.add_dependency(%q<cucumber>, [">= 0"])
       s.add_dependency(%q<cucumber-nagios>, [">= 0"])
       s.add_dependency(%q<fog>, [">= 0"])
@@ -130,17 +115,8 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<rcov>, [">= 0"])
     end
   else
-<<<<<<< HEAD
-    s.add_dependency(%q<chef>, [">= 0.10.0"])
-    s.add_dependency(%q<fog>, [">= 0"])
-    s.add_dependency(%q<thor>, [">= 0"])
-    s.add_dependency(%q<bundler>, ["~> 1.0.0"])
-    s.add_dependency(%q<jeweler>, ["~> 1.6.2"])
-    s.add_dependency(%q<rcov>, [">= 0"])
-=======
     s.add_dependency(%q<rake>, ["~> 0.9.2"])
     s.add_dependency(%q<chef>, [">= 0.10.2"])
->>>>>>> upstream/master
     s.add_dependency(%q<cucumber>, [">= 0"])
     s.add_dependency(%q<cucumber-nagios>, [">= 0"])
     s.add_dependency(%q<fog>, [">= 0"])
