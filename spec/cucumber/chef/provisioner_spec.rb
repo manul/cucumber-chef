@@ -41,27 +41,51 @@ describe Cucumber::Chef::Provisioner do
   end
 
   describe "bootstrap_node" do
+    before(:all) do
+      subject.upload_cookbook(@config)
+      subject.upload_role(@config)
+      sleep(5)
+    end
+
     before(:each) do
       @test_lab = Cucumber::Chef::TestLab.new(@config)
       @test_lab.destroy
-      server = subject.build_test_lab(@config, StringIO.new)
+      begin
+        buildoutput = StringIO.new
+        server = subject.build_test_lab(@config, buildoutput)
+      rescue
+        puts "Output from #build_test_lab:"
+        puts buildoutput.read
+        raise
+      end
       @dns_name = server.dns_name
-      puts "Hanging around..." until tcp_test_ssh(server.public_ip_address)
-      puts "Got ssh..."
-      sleep(10)
-      subject.upload_cookbook(@config)
-      subject.upload_role(@config)
+      sleep(30)
     end
     
     after(:each) do
       @test_lab.destroy
     end
-
+ 
     it "should assign a random name to the node" do
-      subject.bootstrap_node(@dns_name, @config)
-      @test_lab.nodes.detect do |node|
-        node.name.match /^cucumber-chef-[0-9a-f]{8}$/
-      end.should be
+      begin
+        puts "Beginning bootstrap on #{@dns_name}..."
+        subject.bootstrap_node(@dns_name, @config)
+      rescue
+        puts "Output from #bootstrap_node:"
+        puts "  STANDARD OUTPUT:", subject.stdout.read, "\n\n"
+        puts "  STANDARD ERROR:", subject.stderr.read, "\n\n"
+        raise
+      end
+      found_node = false
+      tries = 0
+      while ! found_node && tries < 5
+        tries += 1
+        sleep(10)
+        found_node = !!@test_lab.nodes.detect do |node|
+          node.name.match /^cucumber-chef-[0-9a-f]{8}$/
+        end
+      end
+      found_node.should be
     end
   end
 end

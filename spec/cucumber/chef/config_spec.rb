@@ -38,7 +38,7 @@ describe Cucumber::Chef::Config do
           subject.verify
         }.to raise_error(Cucumber::Chef::ConfigError, /chef_server_url.*aws_access_key_id/)
       end
-      
+
       describe "when node name is invalid" do
         it "should raise" do
           ENV["OPSCODE_USER"] = "REALLYBOGUSORGNAME"
@@ -47,7 +47,7 @@ describe Cucumber::Chef::Config do
           }.to raise_error(Cucumber::Chef::ConfigError, /Opscode platform credentials/)
         end
       end
-    
+
       describe "when aws_access_key_id is empty" do
         it "should raise" do
           subject.config[:knife][:aws_access_key_id] = "bogus"
@@ -68,7 +68,8 @@ describe Cucumber::Chef::Config do
   describe "when knife.rb is missing" do
     it "should raise" do
       begin
-        chef_dir = Pathname("~/.chef").expand_path
+        # Handle case of local .chef directory for gem development
+        chef_dir = (File.exist?('.chef') ? Pathname('.chef') : Pathname("~/.chef")).expand_path
         (chef_dir + "knife.rb").rename(chef_dir + "knife.rb.bak")
         config_file = chef_dir + "knife.rb"
         expect { subject.config }.to raise_error(Cucumber::Chef::ConfigError)
@@ -87,7 +88,6 @@ describe Cucumber::Chef::Config do
 
     it "should return the configuration values" do
       subject[:node_name].should == @opscode_user
-      subject[:knife][:ssh_user].should == "ubuntu"
     end
 
     it "should allow setting configuration values" do
@@ -108,6 +108,81 @@ describe Cucumber::Chef::Config do
 
     it "should know it is not in test_mode" do
       Cucumber::Chef::Config.new.test_mode?.should_not be
+    end
+
+    describe "and an ami is specified" do
+      it "should be returned" do
+        subject[:knife][:aws_image_id] = "my-test-ami"
+        subject.aws_image_id.should == "my-test-ami"
+      end
+    end
+
+    describe "and no ami is specified but region and ubuntu release are" do
+      before(:each) do
+        UbuntuAmi.any_instance.should_receive(:run).and_return({ "eu_west_large_ebs"=>"large-ebs-instance",
+                                                                 "eu_west_small_ebs"=>"small-ebs-instance",
+                                                                 "eu_west_large"=>"large-instance",
+                                                                 "eu_west_small"=>"small-instance",
+                                                                 "us_west_small"=>"us-west-small-instance" })
+        subject[:knife][:aws_image_id] = nil
+        subject[:knife][:ubuntu_release] = "lucid"
+        subject[:knife][:region] = "eu-west-1"
+        subject[:knife][:aws_instance_arch] = nil
+        subject[:knife][:aws_instance_disk_store] = nil
+      end
+
+      it "should default to a small instance if unspecified" do
+        subject.aws_image_id.should == "small-instance"
+      end
+
+      it "should get a small instance if i386 specified" do
+        subject[:knife][:aws_instance_arch] = "i386"
+        subject.aws_image_id.should == "small-instance"
+      end
+
+      it "should get a us-west small instance if specified" do
+        subject[:knife][:region] = "us-west-1"
+        subject[:knife][:aws_instance_arch] = "small"
+        subject.aws_image_id.should == "us-west-small-instance"
+      end
+
+      it "should get a large instance if amd64 specified" do
+        subject[:knife][:aws_instance_arch] = "amd64"
+        subject.aws_image_id.should == "large-instance"
+      end
+
+      it "should get an ebs backed instance if specified" do
+        subject[:knife][:aws_instance_disk_store] = "ebs"
+        subject.aws_image_id.should == "small-ebs-instance"
+      end
+
+      it "should get a large ebs backed instance if specified" do
+        subject[:knife][:aws_instance_disk_store] = "ebs"
+        subject[:knife][:aws_instance_arch] = "amd64"
+        subject.aws_image_id.should == "large-ebs-instance"
+      end
+    end
+
+    it "should default to an m1.small instance type" do
+      subject.aws_instance_type.should == "m1.small"
+    end
+
+    describe "and an instance type is specified" do
+      it "should return the specified instance type" do
+        subject[:knife][:aws_instance_type] = "m1.large"
+        subject.aws_instance_type.should == "m1.large"
+      end
+    end
+  end
+
+  it "should default to security group cucumber-chef" do
+    subject.security_group.should == "cucumber-chef"
+  end
+
+  describe "and a security group is specified" do
+    it "should return the specified security group" do
+      subject[:knife][:aws_security_group] = "my-security-group"
+      subject.security_group.should == "my-security-group"
     end
   end
 end
